@@ -1,7 +1,7 @@
 <?php
-namespace frontend\widgets;
+namespace gooverdian\searchSelect;
 
-use frontend\assets\SearchSelectAsset;
+use gooverdian\SearchSelectAsset;
 use yii\base\Widget;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
