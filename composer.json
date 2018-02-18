@@ -1,5 +1,5 @@
 {
-    "name": "gooverdian/yii-search-select",
+    "name": "gooverdian/yii2-search-select",
     "type": "widget",
     "description": "Search Select Widget for Yii2",
     "keywords": ["yii2","widget","search","select"],
@@ -16,4 +16,9 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*"
     },
+    "autoload": {
+        "psr-4": {
+            "gooverdian\\yii2-search-select\\": ""
+        }
+    }
 }
