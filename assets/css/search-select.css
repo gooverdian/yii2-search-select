@@ -1,0 +1,35 @@
+.panel.search-select-picker-wrap {
+    position: absolute;
+    background: #fff;
+    max-height: 100vh;
+    display: flex;
+    flex-flow: column;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.search-select-picker-shown {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.search-select-picker-controls {
+    flex: 0;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.search-select-picker-results {
+    flex: 1;
+    overflow: auto;
+    max-height: 250px;
+}
+
+.search-select-picker-highlighted {
+    background: #eee;
+}
