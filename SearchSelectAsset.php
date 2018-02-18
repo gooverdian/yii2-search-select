@@ -1,8 +1,9 @@
 <?php
 namespace gooverdian\searchSelect;
 
-use yii\bootstrap\BootstrapAsset;
 use yii\web\AssetBundle;
+use yii\web\View;
+use yii\bootstrap\BootstrapAsset;
 
 class SearchSelectAsset extends AssetBundle
 {
