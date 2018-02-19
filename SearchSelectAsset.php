@@ -1,5 +1,5 @@
 <?php
-namespace gooverdian\searchSelect;
+namespace gooverdian\sSelect;
 
 use yii\web\AssetBundle;
 use yii\web\View;

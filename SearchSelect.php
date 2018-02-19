@@ -1,7 +1,6 @@
 <?php
-namespace gooverdian\searchSelect;
+namespace gooverdian\sSelect;
 
-use yii\base\Widget;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
 
