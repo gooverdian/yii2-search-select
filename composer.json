@@ -4,7 +4,7 @@
     "description": "Search Select Widget for Yii2",
     "keywords": ["yii2","widget","search","select"],
     "homepage": "https://github.com/gooverdian/yii2-search-select",
-    "license": "BSD-3",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Gooverdian",
