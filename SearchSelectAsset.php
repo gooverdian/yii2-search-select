@@ -15,18 +15,23 @@ class SearchSelectAsset extends AssetBundle
     /**
      * @inheritdoc
      */
+    public $sourcePath = __DIR__ . '/assets';
+
+    /**
+     * @inheritdoc
+     */
+    public $js = ['js/search-select'];
+
+    /**
+     * @inheritdoc
+     */
+    public $css = ['css/search-select'];
+
+    /**
+     * @inheritdoc
+     */
     public $depends = [
         BootstrapAsset::class,
     ];
     
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        $this->setSourcePath(__DIR__ . '/assets');
-        $this->setupAssets('js', ['js/search-select']);
-        $this->setupAssets('css', ['css/search-select']);
-        parent::init();
-    }
 }
