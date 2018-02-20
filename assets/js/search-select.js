@@ -3,7 +3,7 @@
  */
 (function ($) {
 
-    $.fn.searchSelect = function () {
+    $.fn.searchSelect = function (options) {
 
         function isPickerShown($input) {
             var data = $input.data('search-select');
@@ -142,14 +142,33 @@
             data.search = $input.val();
             data.results = {};
 
-            for (var dataKey in data.sourceData) {
-                if (!data.sourceData.hasOwnProperty(dataKey)) {
+            $.ajax({
+                url: data.settings.url,
+                dataType: 'json',
+                data: {
+                    query: data.search
+                }
+            }).done(function (response) {
+                console.log(response);
+                data.currentItems = response;
+                updateResults($input);
+            });
+        }
+
+        function updateResults($input)
+        {
+            var data = $input.data('search-select');
+
+            for (var dataKey in data.currentItems) {
+                if (!data.currentItems.hasOwnProperty(dataKey)) {
                     continue;
                 }
-                if (String(data.sourceData[dataKey]).indexOf(data.search) !== -1) {
-                    data.results[dataKey] = data.sourceData[dataKey];
-                }
+                //if (String(data.currentItems[dataKey]).indexOf(data.search) !== -1) {
+                    data.results[dataKey] = data.currentItems[dataKey];
+                //}
             }
+
+            showResults($input);
         }
 
         function pickerScrollToResult($input, $result) {
@@ -231,7 +250,6 @@
 
             $input.on('keydown', function (event) {
                 if (isPickerShown($input)) {
-                    console.log(event.key);
                     prevent = true;
                     switch (event.key) {
                         case 'ArrowDown':
@@ -260,7 +278,6 @@
 
                 invalidateSelection($input);
                 searchData($input);
-                showResults($input);
             });
 
             $input.on('blur', function (event) {
@@ -275,12 +292,20 @@
             });
         }
 
+        var settings = $.extend({
+            requestThreshold: 200,
+            url: false,
+            items: []
+        }, options);
+
         return this.each(function () {
             var $input = $(this);
 
             if ($input.data('search-select')) {
                 return this;
             }
+
+            console.log(settings);
 
             var rawData = {};
             var keyValue;
@@ -290,11 +315,10 @@
             }
 
             var data = {
-                options: {
-                    requestThreshold: 200
-                },
-                sourceData: rawData,
-                selected: null
+                settings: settings,
+                currentItems: rawData,
+                selected: null,
+                search: null
             };
 
             assignEvents($input);
