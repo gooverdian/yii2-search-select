@@ -126,6 +126,7 @@
             });
 
             $input.addClass('search-select-picker-shown');
+            updateResults($input);
             $pickerWrap.show();
         }
 
@@ -139,11 +140,18 @@
         }
 
         function invalidateSelection($input) {
-            var data = $input.data('search-select');
             //console.log('Invalidate Selection');
-            data.selected = null;
+            var data = $input.data('search-select');
+            var $pickerResults = data.pickerWrap.children('.search-select-picker-results');
+
+            if ($pickerResults.children('.active').length) {
+                $pickerResults.children('.active').removeClass('active');
+            }
+
+            data.selected = undefined;
             $('#' + data.settings.inputId).val('');
             data.search = $input.val();
+
             if (!isPickerShown($input)) {
                 showPickerForm($input);
             }
@@ -334,18 +342,12 @@
 
             //console.log(settings);
 
-            var rawData = {};
-            var keyValue;
-            for (var i = 0; i < 30; i++) {
-                keyValue = Math.round(Math.random() * 900000 + 100000);
-                rawData[keyValue] = keyValue;
-            }
-
             var data = {
                 settings: settings,
-                currentItems: rawData,
+                currentItems: settings.items,
                 selected: undefined,
-                search: undefined
+                search: undefined,
+                results: {}
             };
 
             var $dataInput = $('#' + data.settings.inputId);
@@ -355,6 +357,7 @@
                     key: $dataInput.val(),
                     title: $input.val()
                 };
+                data.currentItems[data.selected.key] = data.selected.title;
             }
 
             assignEvents($input);
