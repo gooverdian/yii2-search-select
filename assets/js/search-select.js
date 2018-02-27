@@ -17,15 +17,24 @@
                 display: 'none'
             });
 
-            $pickerWrap.html(
-                '<div class="list-group search-select-picker-results"></div>' +
-                '<div class="panel-footer search-select-picker-controls">' +
-                '<a href="#" class="btn btn-default pull-right" ' +
-                'onclick="$(\'.search-select-picker-controls\').append(\'Button pressed\')">' +
-                '<span class="glyphicon glyphicon-plus"></span> Testing button' +
-                '</a>' +
-                '</div>'
-            );
+            var $pickerResults = $('<div class="list-group search-select-picker-results"></div>');
+            $pickerWrap.append($pickerResults);
+
+            if (data.settings.buttons.length) {
+                var $pickerControls = $('<div class="panel-footer search-select-picker-controls"></div>');
+                var $dataInput = $('#' + data.settings.inputId);
+                for (var i = 0; i < data.settings.buttons.length; i++) {
+                    var $button = $('<button type="button"></button>');
+                    $button.html(data.settings.buttons[i].title);
+                    $button.addClass(data.settings.buttons[i].class);
+                    var clickEvent = data.settings.buttons[i].clickEvent;
+                    $button.on('click', function() {
+                        $dataInput.trigger(clickEvent);
+                    });
+                    $pickerControls.append($button);
+                }
+                $pickerWrap.append($pickerControls);
+            }
 
             $pickerWrap.on('mousedown', function (event) {
                 event.preventDefault();
@@ -79,10 +88,12 @@
 
             data.selected = {
                 key: $result.attr('data-key'),
-                text: $result.text()
+                title: $result.text()
             };
 
-            $input.val(data.selected.text);
+            $input.val(data.selected.title);
+            //console.log(data);
+            $('#' + data.settings.inputId).val(data.selected.key).change();
             $result.addClass('active');
             $pickerResults
                 .children('.search-select-picker-highlighted')
@@ -96,7 +107,7 @@
          * @param $input
          */
         function showPickerForm($input) {
-            console.log('Show picker', $input);
+            //console.log('Show picker', $input);
             var data = $input.data('search-select');
             if (!data.pickerWrap) {
                 createPickerForm($input);
@@ -119,7 +130,7 @@
         }
 
         function hidePickerForm($input) {
-            console.log('Hide picker', $input);
+            //console.log('Hide picker', $input);
             var data = $input.data('search-select');
             var $pickerWrap = data.pickerWrap;
 
@@ -129,8 +140,9 @@
 
         function invalidateSelection($input) {
             var data = $input.data('search-select');
-            console.log('Invalidate Selection');
+            //console.log('Invalidate Selection');
             data.selected = null;
+            $('#' + data.settings.inputId).val('');
             data.search = $input.val();
             if (!isPickerShown($input)) {
                 showPickerForm($input);
@@ -142,17 +154,25 @@
             data.search = $input.val();
             data.results = {};
 
-            $.ajax({
-                url: data.settings.url,
-                dataType: 'json',
-                data: {
-                    query: data.search
-                }
-            }).done(function (response) {
-                console.log(response);
-                data.currentItems = response;
-                updateResults($input);
-            });
+            if (data.requestTimeout) {
+                clearTimeout(data.requestTimeout)
+            }
+
+            data.requestTimeout = setTimeout(
+                function() {
+                    $.ajax({
+                        url: data.settings.url,
+                        dataType: 'json',
+                        data: {
+                            query: data.search
+                        }
+                    }).done(function (response) {
+                        data.currentItems = response;
+                        updateResults($input);
+                    });
+                },
+                data.settings.requestThreshold
+            );
         }
 
         function updateResults($input)
@@ -182,7 +202,7 @@
             var elementHeight = $result.outerHeight();
             var currentScrollTop = $pickerResults.scrollTop();
 
-            console.log(currentScrollTop, pickerHeight, position.top, elementHeight);
+            //console.log(currentScrollTop, pickerHeight, position.top, elementHeight);
 
             if (position.top < 0) {
                 $pickerResults.scrollTop( currentScrollTop + position.top - 10 );
@@ -294,8 +314,10 @@
 
         var settings = $.extend({
             requestThreshold: 200,
-            url: false,
-            items: []
+            inputId: undefined,
+            url: undefined,
+            items: [],
+            buttons: []
         }, options);
 
         return this.each(function () {
@@ -305,7 +327,12 @@
                 return this;
             }
 
-            console.log(settings);
+            $input.attr({
+                autocomplete : 'off'
+            });
+
+
+            //console.log(settings);
 
             var rawData = {};
             var keyValue;
@@ -317,9 +344,18 @@
             var data = {
                 settings: settings,
                 currentItems: rawData,
-                selected: null,
-                search: null
+                selected: undefined,
+                search: undefined
             };
+
+            var $dataInput = $('#' + data.settings.inputId);
+
+            if ($dataInput.val()) {
+                data.selected = {
+                    key: $dataInput.val(),
+                    title: $input.val()
+                };
+            }
 
             assignEvents($input);
 
