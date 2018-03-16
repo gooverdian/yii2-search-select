@@ -190,7 +190,6 @@
      * @param $input
      */
     function showPickerForm($input) {
-        //console.log('Show picker', $input);
         var data = $input.data('search-select');
         if (!data.pickerWrap) {
             createPickerForm($input);
@@ -214,7 +213,6 @@
     }
 
     function hidePickerForm($input) {
-        //console.log('Hide picker', $input);
         var data = $input.data('search-select');
         var $pickerWrap = data.pickerWrap;
 
@@ -223,7 +221,6 @@
     }
 
     function invalidateSelection($input) {
-        //console.log('Invalidate Selection');
         var data = $input.data('search-select');
         var $pickerResults = data.pickerWrap.children('.search-select-picker-results');
 
@@ -274,9 +271,7 @@
             if (!data.currentItems.hasOwnProperty(dataKey)) {
                 continue;
             }
-            //if (String(data.currentItems[dataKey]).indexOf(data.search) !== -1) {
-                data.results[dataKey] = data.currentItems[dataKey];
-            //}
+            data.results[dataKey] = data.currentItems[dataKey];
         }
 
         showResults($input);
@@ -292,8 +287,6 @@
         var pickerHeight = $pickerResults.innerHeight();
         var elementHeight = $result.outerHeight();
         var currentScrollTop = $pickerResults.scrollTop();
-
-        //console.log(currentScrollTop, pickerHeight, position.top, elementHeight);
 
         if (position.top < 0) {
             $pickerResults.scrollTop( currentScrollTop + position.top - 10 );
@@ -360,6 +353,7 @@
         });
 
         $input.on('keydown', function (event) {
+            var prevent;
             if (isPickerShown($input)) {
                 prevent = true;
                 switch (event.key) {
