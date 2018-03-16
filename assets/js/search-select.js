@@ -1,5 +1,5 @@
 /**
- * Плагин выбора с поиском для jQuery
+ * Select with search Jquery plugin
  */
 (function ($) {
 
@@ -17,7 +17,7 @@
     var events = {};
 
     var defaults = {
-        requestThreshold: 200,
+        requestThreshold: 300,
         emptyResultsMessage: 'Nothing found',
         inputId: undefined,
         url: undefined,
@@ -75,6 +75,12 @@
 
                 data.settings = $.extend({}, data.settings, options || {});
 
+                if (options.url) {
+                    data.currentItems = [];
+                    updateResults($input);
+                    showResults($input);
+                }
+
                 if (pickerCurrentlyShown) {
                     hidePickerForm($input);
                     data.pickerWrap = undefined;
@@ -88,7 +94,7 @@
 
     function isPickerShown($input) {
         var data = $input.data('search-select');
-        return data.pickerWrap.is(':visible');
+        return data.pickerWrap && data.pickerWrap.is(':visible');
     }
 
     function createPickerForm($input) {
@@ -240,7 +246,6 @@
     function searchData($input) {
         var data = $input.data('search-select');
         data.search = $input.val();
-        data.results = {};
 
         if (data.requestTimeout) {
             clearTimeout(data.requestTimeout)
@@ -266,6 +271,7 @@
     function updateResults($input)
     {
         var data = $input.data('search-select');
+        data.results = {};
 
         for (var dataKey in data.currentItems) {
             if (!data.currentItems.hasOwnProperty(dataKey)) {
@@ -394,6 +400,12 @@
             }
 
             hidePickerForm($(this));
+        });
+
+        $input.on('click', function (event) {
+            if ($(this).is(':focus') && !isPickerShown($input)) {
+                showPickerForm($input);
+            }
         });
     }
 
