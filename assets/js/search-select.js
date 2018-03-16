@@ -62,6 +62,27 @@
 
                 $input.data('search-select', data);
             });
+        },
+
+        update: function(options) {
+            return this.each(function () {
+                var $input = $(this),
+                    data = $input.data('search-select');
+                if (!data) {
+                    return;
+                }
+                var pickerCurrentlyShown = isPickerShown($input);
+
+                data.settings = $.extend({}, data.settings, options || {});
+
+                if (pickerCurrentlyShown) {
+                    hidePickerForm($input);
+                    data.pickerWrap = undefined;
+                    showPickerForm($input);
+                } else {
+                    data.pickerWrap = undefined;
+                }
+            });
         }
     };
 
@@ -89,6 +110,7 @@
                 $button.addClass(data.settings.buttons[i].class);
                 var clickEvent = data.settings.buttons[i].clickEvent;
                 $button.on('click', function() {
+                    hidePickerForm($input);
                     $dataInput.trigger(clickEvent);
                 });
                 $pickerControls.append($button);
@@ -128,8 +150,8 @@
         if (resultsCounter === 0) {
             $result = $('<div class="list-group-item"></div>');
             var $emptyResultElement = $('<em class="text-muted"></em>');
-            $emptyResultElement.text(data.settings.notFoundMessage);
-            $result.append($notFoundElement);
+            $emptyResultElement.text(data.settings.emptyResultsMessage);
+            $result.append($emptyResultElement);
             $pickerResults.append($result);
         }
 
