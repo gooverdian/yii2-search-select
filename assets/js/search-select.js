@@ -89,6 +89,20 @@
                     data.pickerWrap = undefined;
                 }
             });
+        },
+
+        clearSelection: function() {
+            return this.each(function () {
+                var $input = $(this),
+                    data = $input.data('search-select');
+                if (!data) {
+                    return;
+                }
+
+                invalidateSelection($input);
+
+                $input.trigger('blur');
+            });
         }
     };
 
@@ -135,6 +149,9 @@
 
     function showResults($input) {
         var data = $input.data('search-select');
+        if (!data.pickerWrap) {
+            return;
+        }
         var $pickerResults = data.pickerWrap.children('.search-select-picker-results');
         var results = data.results;
         var resultsCounter = 0;
@@ -204,6 +221,9 @@
         if (data.search && !data.selected) {
             $input.attr('placeholder', '');
             $input.val(data.search);
+            if (Object.keys(data.results).length === 0) {
+                searchData($input);
+            }
         }
 
         var inputOffset = $input.offset();
@@ -220,6 +240,9 @@
 
     function hidePickerForm($input) {
         var data = $input.data('search-select');
+        if (!isPickerShown($input)) {
+            return;
+        }
         var $pickerWrap = data.pickerWrap;
 
         $input.removeClass('search-select-picker-shown');
@@ -228,18 +251,21 @@
 
     function invalidateSelection($input) {
         var data = $input.data('search-select');
-        var $pickerResults = data.pickerWrap.children('.search-select-picker-results');
-
-        if ($pickerResults.children('.active').length) {
-            $pickerResults.children('.active').removeClass('active');
+        if (data.pickerWrap) {
+            var $pickerResults = data.pickerWrap.children('.search-select-picker-results');
+            if ($pickerResults.children('.active').length) {
+                $pickerResults.children('.active').removeClass('active');
+            }
         }
 
-        data.selected = undefined;
         $('#' + data.settings.inputId).val('');
-        data.search = $input.val();
+        if (data.selected) {
+            data.selected = undefined;
+            data.search = $input.val();
 
-        if (!isPickerShown($input)) {
-            showPickerForm($input);
+            if (!isPickerShown($input)) {
+                showPickerForm($input);
+            }
         }
     }
 
@@ -394,7 +420,7 @@
         $input.on('blur', function (event) {
             var data = $(this).data('search-select');
 
-            if (!data.selected) {
+            if (!data.selected && ($input.val() !== '' || $input.attr('placeholder') === '')) {
                 $input.attr('placeholder', $(this).val());
                 $input.val('');
             }
