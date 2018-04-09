@@ -178,7 +178,8 @@
             $pickerResults.append($result);
         }
 
-        $pickerResults.children('a').on('click', function () {
+        $pickerResults.children('a').on('click', function (event) {
+            event.preventDefault();
             selectItem($input, $(this));
         });
 
@@ -279,28 +280,54 @@
 
         data.requestTimeout = setTimeout(
             function() {
-                $.ajax({
-                    url: data.settings.url,
-                    dataType: 'json',
-                    data: {
-                        query: data.search
-                    }
-                }).done(function (response) {
-                    data.currentItems = response;
-                    updateResults($input);
-                });
+                if (data.settings.url) {
+                    $.ajax({
+                        url: data.settings.url,
+                        dataType: 'json',
+                        data: {
+                            query: data.search
+                        }
+                    }).done(function (response) {
+                        data.currentItems = response;
+                        updateResults($input);
+                    });
+                } else {
+                    updateResults($input, true);
+                }
             },
             data.settings.requestThreshold
         );
     }
 
-    function updateResults($input)
+    function prepareSearchString(search)
     {
+        var searchString = String(search),
+            trimRegex = /^\s+|\s+$/g;
+        searchString = searchString
+            .toLowerCase()
+            .replace(trimRegex, '');
+        return searchString;
+    }
+
+    function passingFilter(value, filter)
+    {
+        var preparedValue = prepareSearchString(value),
+            preparedFilter = prepareSearchString(filter);
+
+        return preparedValue.indexOf(preparedFilter) !== -1;
+    }
+
+    function updateResults($input, useFilter)
+    {
+        useFilter = useFilter || false;
         var data = $input.data('search-select');
         data.results = {};
 
         for (var dataKey in data.currentItems) {
             if (!data.currentItems.hasOwnProperty(dataKey)) {
+                continue;
+            }
+            if (useFilter && !passingFilter(data.currentItems[dataKey], data.search)) {
                 continue;
             }
             data.results[dataKey] = data.currentItems[dataKey];

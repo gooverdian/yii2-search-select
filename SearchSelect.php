@@ -41,14 +41,15 @@ class SearchSelect extends InputWidget
         $searchInputOptions['id'] = $searchInputId;
         if (isset($this->model) && isset($this->attribute)) {
             $searchInputName = Html::getInputName($this->model, $this->attribute . '_search_select_title');
-
             $dataInput = Html::activeHiddenInput($this->model, $this->attribute);
-            $searchInput = Html::textInput($searchInputName, $this->valueTitle, $searchInputOptions);
         } else {
             $searchInputName = $this->name . '_search_select_title';
-            $dataInput = '';
-            $searchInput = '';
+            $dataInput = Html::hiddenInput($this->name, $this->value, [
+                'id' => $this->options['id']
+            ]);
         }
+
+        $searchInput = Html::textInput($searchInputName, $this->valueTitle, $searchInputOptions);
 
         $this->view->registerJs(
             '$("#' . $searchInputId . '").searchSelect(' . $clientOptionsJson . ');'
@@ -57,7 +58,7 @@ class SearchSelect extends InputWidget
             . '});'
         );
 
-        return "$dataInput\n$searchInput"; //::textInput($this->name, $this->value, $this->options);
+        return "$dataInput\n$searchInput";
     }
 
     public function prepareOptions()
