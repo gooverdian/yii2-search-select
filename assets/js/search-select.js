@@ -14,7 +14,10 @@
         }
     };
 
-    var events = {};
+    var events = {
+        itemSelected: 'itemSelected',
+        itemDeselected: 'itemDeselected'
+    };
 
     var defaults = {
         requestThreshold: 300,
@@ -201,6 +204,7 @@
 
         $input.val(data.selected.title);
         $('#' + data.settings.inputId).val(data.selected.key).change();
+        $input.trigger(events.itemSelected);
         $result.addClass('active');
         $pickerResults
             .children('.search-select-picker-highlighted')
@@ -263,6 +267,7 @@
         if (data.selected) {
             data.selected = undefined;
             data.search = $input.val();
+            $input.trigger(events.itemDeselected);
 
             if (!isPickerShown($input)) {
                 showPickerForm($input);
