@@ -222,7 +222,7 @@
         if (data.search && !data.selected) {
             $input.attr('placeholder', '');
             $input.val(data.search);
-            if (Object.keys(data.results).length === 0) {
+            if (Object.keys(data.results).length === 0 && data.settings.url) {
                 searchData($input);
             }
         }
@@ -235,7 +235,7 @@
         });
 
         $input.addClass('search-select-picker-shown');
-        updateResults($input);
+        updateResults($input, !Boolean(data.settings.url));
         $pickerWrap.show();
     }
 
@@ -319,10 +319,10 @@
 
     function updateResults($input, useFilter)
     {
-        useFilter = useFilter || false;
-        var data = $input.data('search-select');
-        data.results = {};
+        var data = $input.data('search-select'),
+            useFilter = (useFilter && data.search) || false;
 
+        data.results = {};
         for (var dataKey in data.currentItems) {
             if (!data.currentItems.hasOwnProperty(dataKey)) {
                 continue;
