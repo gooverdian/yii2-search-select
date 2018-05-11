@@ -54,7 +54,9 @@ class SearchSelect extends InputWidget
         $this->view->registerJs(
             '$("#' . $searchInputId . '").searchSelect(' . $clientOptionsJson . ');'
             . '$("#' . $searchInputId . '").on("blur change", function() {'
+            . 'if ($(this).closest("form").length) {'
             . '$(this).closest("form").yiiActiveForm("validateAttribute", "' . $this->options['id'] . '"); '
+            . '}'
             . '});'
         );
 
